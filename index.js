@@ -18,7 +18,7 @@ app.set('port', 8000);
 
 
 async function getData(cuenta, clave) {
-const options = process.env.AWS_REGION
+    const options = process.env.AWS_REGION
     ? {
         args: chrome.args,
         executablePath: await chrome.executablePath,
