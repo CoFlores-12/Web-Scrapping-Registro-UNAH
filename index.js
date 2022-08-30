@@ -1,13 +1,39 @@
 const express = require('express');
-const puppeteer = require('puppeteer');
+let chrome = {};
+let puppeteer;
+
+if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+  // running on the Vercel platform.
+  chrome = require('chrome-aws-lambda');
+  puppeteer = require('puppeteer-core');
+} else {
+  // running locally.
+  puppeteer = require('puppeteer');
+}
 
 const app = express();
 
 app.set('port', 8000);
 
+const options = process.env.AWS_REGION
+    ? {
+        args: chrome.args,
+        executablePath: await chrome.executablePath,
+        headless: chrome.headless
+      }
+    : {
+        args: [],
+        executablePath:
+          process.platform === 'win32'
+            ? 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
+            : process.platform === 'linux'
+            ? '/usr/bin/google-chrome'
+            : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+      };
+
 async function getData(cuenta, clave) {
   const classRes = [];
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch(options);
   const page = await browser.newPage();
   await page.goto('https://registro.unah.edu.hn/pregra_estu_login.aspx');
   await page.type('#MainContent_txt_cuenta', cuenta);
