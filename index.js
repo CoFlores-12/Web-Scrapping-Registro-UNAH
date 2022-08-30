@@ -15,6 +15,9 @@ const app = express();
 
 app.set('port', 8000);
 
+
+
+async function getData(cuenta, clave) {
 const options = process.env.AWS_REGION
     ? {
         args: chrome.args,
@@ -31,7 +34,6 @@ const options = process.env.AWS_REGION
             : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
       };
 
-async function getData(cuenta, clave) {
   const classRes = [];
   const browser = await puppeteer.launch(options);
   const page = await browser.newPage();
