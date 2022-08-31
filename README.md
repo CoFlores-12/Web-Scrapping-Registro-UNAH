@@ -13,4 +13,4 @@ example:
 https://web-scrapping-registro-unah.vercel.app/api/20201001234/password
 
 ## !!
-if the Registro page rake more that 10 seg. to response, the server will see an error will be thrown,
+if the registration page take more that 10 seg. to response, the server will see an error will be thrown.
