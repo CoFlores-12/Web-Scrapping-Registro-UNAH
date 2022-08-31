@@ -1,6 +1,9 @@
 {
   "name": "web-scrapping-registro-unah",
   "version": "1.0.0",
+  "engines": {
+    "node": "^14"
+  },
   "description": "Get the grades, name of the class and averages from UNAH registration page",
   "main": "index.js",
   "scripts": {
