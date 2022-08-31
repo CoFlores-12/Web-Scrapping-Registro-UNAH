@@ -1,16 +1,9 @@
 const express = require('express');
 const chrome = require('chrome-aws-lambda');
 
-
 const app = express();
 
 app.set('port', 8000);
-
-
-
-
-
-
 
 app.get('/api/:cuenta/:clave', async function (req, res) {
   
