@@ -5,7 +5,11 @@ const app = express();
 
 app.set('port', 8000);
 
-async function getData(cuenta, clave) {
+app.get('/api/:cuenta/:clave', async function (req, res) {
+  //JSON response
+  const classRes = [];
+
+  //Open instance browser chromium
   const browser = await chrome.puppeteer.launch({
     args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
     defaultViewport: chrome.defaultViewport,
@@ -13,24 +17,28 @@ async function getData(cuenta, clave) {
     headless: true,
     ignoreHTTPSErrors: true,
   })
-  const classRes = [];
+
+  //go to login page
   const page = await browser.newPage();
   await page.goto('https://registro.unah.edu.hn/pregra_estu_login.aspx');
-  await page.type('#MainContent_txt_cuenta', cuenta);
-  await page.type('#MainContent_txt_clave', clave);
-  await page.click('#MainContent_Button1');
 
+  //login with credentials 
+  await page.type('#MainContent_txt_cuenta', req.params['cuenta']);
+  await page.type('#MainContent_txt_clave', req.params['clave']);
+  await page.click('#MainContent_Button1');
+  
+  //go to history
   await page.waitForSelector('#MainContent_LinkButton2');
   await page.click('#MainContent_LinkButton2');
 
   await page.waitForSelector('#MainContent_ASPxPageControl1_ASPxGridView2_DXMainTable');
 
+  //get number of pages in history
   let pages = await page.evaluate(() => {
     const data = document.getElementsByClassName('dxpSummary_Aqua');
     const myArray = data[0].innerHTML.split(" ");
     return myArray[3];
   });
-
   
   for (let i = 0; i < pages; i++) {
     const classRestmp = await page.evaluate(() => { 
@@ -52,13 +60,15 @@ async function getData(cuenta, clave) {
       classRes.push(cl);
     }
 
+    //next page in history
     await page.evaluate(() => {
       aspxGVPagerOnClick("MainContent_ASPxPageControl1_ASPxGridView2","PBN");
     });
 
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(2000);
   }
 
+  //get averanges
   const promedio = await page.evaluate(() => {
     const obj = {
       'Average Global': document.getElementById('MainContent_ASPxRoundPanel2_ASPxLabel11').innerHTML,
@@ -71,17 +81,7 @@ async function getData(cuenta, clave) {
 
   await browser.close();
 
-  return classRes;
-}
-
-app.get('/api/:cuenta/:clave', function (req, res) {
-  const classRes = [];
-  
-  (async () => {
-    const response = await getData(req.params['cuenta'], req.params['clave']);
-    res.send(response);
-  })();
-
+  res.send(classRes);
   
 });
 
