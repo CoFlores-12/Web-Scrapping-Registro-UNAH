@@ -1,26 +1,30 @@
 const express = require('express');
 const chrome = require('chrome-aws-lambda');
 
+
 const app = express();
 
 app.set('port', 8000);
 
-const browser = {};
 
-(async () => {
-  browser = await chrome.puppeteer.launch({
-    args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
-    defaultViewport: chrome.defaultViewport,
-    executablePath: await chrome.executablePath,
-    headless: true,
-    ignoreHTTPSErrors: true,
-  })
-});
+
+
+
 
 
 app.get('/api/:cuenta/:clave', async function (req, res) {
+  
   //JSON response
   const classRes = [];
+  const browser = await chrome.puppeteer.launch({
+      args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+      defaultViewport: chrome.defaultViewport,
+      executablePath: await chrome.executablePath,
+      headless: true,
+      ignoreHTTPSErrors: true,
+    });
+
+    
   
   //go to login page
   const page = await browser.newPage();
@@ -43,6 +47,7 @@ app.get('/api/:cuenta/:clave', async function (req, res) {
     const myArray = data[0].innerHTML.split(" ");
     return myArray[3];
   });
+  
   
   for (let i = 0; i < pages; i++) {
     const classRestmp = await page.evaluate(() => { 
@@ -69,7 +74,7 @@ app.get('/api/:cuenta/:clave', async function (req, res) {
       aspxGVPagerOnClick("MainContent_ASPxPageControl1_ASPxGridView2","PBN");
     });
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(900);
   }
 
   //get averanges
@@ -80,10 +85,10 @@ app.get('/api/:cuenta/:clave', async function (req, res) {
     };
     return obj;
   });
-
   classRes.push(promedio);
 
   await browser.close();
+  
 
   res.send(classRes);
   
