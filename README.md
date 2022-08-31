@@ -6,8 +6,9 @@ Get the grades, name of the class and averages from UNAH registration page
 # Only Get Data
 
 ## Usage
-localhost:8000/api/:cuenta/:clave 
+https://web-scrapping-registro-unah.vercel.app/api/:cuenta/:clave 
 
 example:
 
-localhost:8000/api/20201001234/password
+https://web-scrapping-registro-unah.vercel.app/api/20201001234/password
+
