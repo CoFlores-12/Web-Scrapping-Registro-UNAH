@@ -18,24 +18,14 @@ app.set('port', 8000);
 
 
 async function getData(cuenta, clave) {
-    const options = process.env.AWS_REGION
-    ? {
-        args: chrome.args,
-        executablePath: await chrome.executablePath,
-        headless: chrome.headless
-      }
-    : {
-        args: [],
-        executablePath:
-          process.platform === 'win32'
-            ? 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'
-            : process.platform === 'linux'
-            ? '/usr/bin/google-chrome'
-            : '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-      };
-
+  const browser = await chromium.puppeteer.launch({
+    args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: true,
+    ignoreHTTPSErrors: true,
+  })
   const classRes = [];
-  const browser = await puppeteer.launch(options);
   const page = await browser.newPage();
   await page.goto('https://registro.unah.edu.hn/pregra_estu_login.aspx');
   await page.type('#MainContent_txt_cuenta', cuenta);
