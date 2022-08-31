@@ -5,19 +5,23 @@ const app = express();
 
 app.set('port', 8000);
 
-app.get('/api/:cuenta/:clave', async function (req, res) {
-  //JSON response
-  const classRes = [];
+const browser = {};
 
-  //Open instance browser chromium
-  const browser = await chrome.puppeteer.launch({
+(async () => {
+  browser = await chrome.puppeteer.launch({
     args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
     defaultViewport: chrome.defaultViewport,
     executablePath: await chrome.executablePath,
     headless: true,
     ignoreHTTPSErrors: true,
   })
+});
 
+
+app.get('/api/:cuenta/:clave', async function (req, res) {
+  //JSON response
+  const classRes = [];
+  
   //go to login page
   const page = await browser.newPage();
   await page.goto('https://registro.unah.edu.hn/pregra_estu_login.aspx');
@@ -65,7 +69,7 @@ app.get('/api/:cuenta/:clave', async function (req, res) {
       aspxGVPagerOnClick("MainContent_ASPxPageControl1_ASPxGridView2","PBN");
     });
 
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(1500);
   }
 
   //get averanges
