@@ -5,23 +5,32 @@ const app = express();
 
 app.set('port', 8000);
 
+var browser = null;
+var page = null;
+
+
+async function miMiddleware(req,res,next){
+  if (browser === null) {
+      browser = await chrome.puppeteer.launch({
+          args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+          defaultViewport: chrome.defaultViewport,
+          executablePath: await chrome.executablePath,
+          headless: true,
+          ignoreHTTPSErrors: true,
+      });
+  }
+  //go to login page
+  console.log(browser);
+  page = await browser.newPage();
+  await page.goto('https://registro.unah.edu.hn/pregra_estu_login.aspx');
+  await sleep(4 * 1000);
+  next();
+}
+
 app.get('/api/:cuenta/:clave', async function (req, res) {
   
   //JSON response
   const classRes = [];
-  const browser = await chrome.puppeteer.launch({
-      args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
-      defaultViewport: chrome.defaultViewport,
-      executablePath: await chrome.executablePath,
-      headless: true,
-      ignoreHTTPSErrors: true,
-    });
-
-    
-  
-  //go to login page
-  const page = await browser.newPage();
-  await page.goto('https://registro.unah.edu.hn/pregra_estu_login.aspx');
 
   //login with credentials 
   await page.type('#MainContent_txt_cuenta', req.params['cuenta']);
