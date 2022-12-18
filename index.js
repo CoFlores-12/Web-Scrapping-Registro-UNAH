@@ -8,6 +8,9 @@ app.set('port', 8000);
 var browser = null;
 var page = null;
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function miMiddleware(req,res,next){
   if (browser === null) {
@@ -20,14 +23,13 @@ async function miMiddleware(req,res,next){
       });
   }
   //go to login page
-  console.log(browser);
   page = await browser.newPage();
   await page.goto('https://registro.unah.edu.hn/pregra_estu_login.aspx');
   await sleep(4 * 1000);
-  next();
+  await next();
 }
 
-app.get('/api/:cuenta/:clave', async function (req, res) {
+app.get('/api/:cuenta/:clave', miMiddleware, async function (req, res) {
   
   //JSON response
   const classRes = [];
