@@ -13,6 +13,7 @@ function sleep(ms) {
 }
 
 async function miMiddleware(req,res,next){
+  const start = new Date();
   if (browser === null) {
       browser = await chrome.puppeteer.launch({
           args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
@@ -26,6 +27,8 @@ async function miMiddleware(req,res,next){
   page = await browser.newPage();
   await page.goto('https://registro.unah.edu.hn/pregra_estu_login.aspx');
   await sleep(4 * 1000);
+  const end = new Date() - start;
+  console.log(`Tiempo de ejecución ${end} ms`);
   await next();
 }
 
