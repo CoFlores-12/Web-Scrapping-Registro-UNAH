@@ -34,6 +34,7 @@ app.get('/api/:cuenta/:clave', miMiddleware, async function (req, res) {
   //JSON response
   const classRes = [];
 
+  console.log(page);
   //login with credentials 
   await page.type('#MainContent_txt_cuenta', req.params['cuenta']);
   await page.type('#MainContent_txt_clave', req.params['clave']);
@@ -91,9 +92,8 @@ app.get('/api/:cuenta/:clave', miMiddleware, async function (req, res) {
   });
   classRes.push(promedio);
 
-  await browser.close();
+  await page.close();
   
-
   res.send(classRes);
   
 });
