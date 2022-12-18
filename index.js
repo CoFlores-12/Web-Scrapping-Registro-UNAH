@@ -26,7 +26,6 @@ async function miMiddleware(req,res,next){
   //go to login page
   page = await browser.newPage();
   await page.goto('https://registro.unah.edu.hn/pregra_estu_login.aspx');
-  await sleep(4 * 1000);
   const end = new Date() - start;
   console.log(`Tiempo de ejecución ${end} ms`);
   await next();
@@ -37,7 +36,6 @@ app.get('/api/:cuenta/:clave', miMiddleware, async function (req, res) {
   //JSON response
   const classRes = [];
 
-  console.log(page);
   //login with credentials 
   await page.type('#MainContent_txt_cuenta', req.params['cuenta']);
   await page.type('#MainContent_txt_clave', req.params['clave']);
@@ -101,7 +99,14 @@ app.get('/api/:cuenta/:clave', miMiddleware, async function (req, res) {
   
 });
 
-app.listen(app.get('port'), function(err){
+app.listen(app.get('port'), async function(err){
    if (err) console.log(err);
+   browser = await chrome.puppeteer.launch({
+    args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+    defaultViewport: chrome.defaultViewport,
+    executablePath: await chrome.executablePath,
+    headless: true,
+    ignoreHTTPSErrors: true,
+});
    console.log("Server listening on PORT", app.get('port'));
 });
